@@ -31,13 +31,43 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'pages',
 ]
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "ARC Admin",
+    "site_header": "ARC",
+    "site_brand": "ARC",
+    "welcome_sign": "Welcome to ARC Admin Panel",
+    "copyright": "ARC",
+
+    "topmenu_links": [
+        {"name": "Home", "url": "/", "permissions": ["auth.view_user"]},
+    ],
+
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "order_with_respect_to": ["auth", "core", "Accounts"],
+
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "core.YourModel": "fas fa-box",  # Replace with your models
+    },
+
+    "show_ui_builder": False,
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
