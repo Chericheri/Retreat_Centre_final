@@ -17,6 +17,41 @@
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
     <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+
+     <style>
+        /* FULL-WIDTH FIXES - ADD THESE STYLES */
+        /* Remove all container padding */
+        .container, 
+        .container-fluid, 
+        .container-xxl,
+        .container-lg, 
+        .container-md, 
+        .container-sm, 
+        .container-xl {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            padding-top: 0 !important;
+            
+            margin-top: 0 !important;
+            max-width: 100% !important;
+        }
+        
+        
+        /* Make sure rows don't add margin */
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        /* Carousel specific fixes */
+        .carousel-item img {
+            width: 100% !important;
+            height: 80vh; /* Adjust this value as needed */
+            object-fit: cover;
+        }
+        
+        
+    </style>
 </head>
 
 <body>
