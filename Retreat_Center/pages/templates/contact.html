@@ -1,3 +1,8 @@
+{% extends 'base.html' %}  
+{% load static %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -192,12 +197,6 @@
     <!-- Template Javascript -->
     <script src="/assets/js/main.js"></script>
 
-    <!-- Load Header and Footer -->
-    <script>
-        $(function(){
-            $("#header-placeholder").load("/components/header.php");
-            $("#footer-placeholder").load("/components/footer.php");
-        });
-    </script>
-</body>
 </html>
+
+{% endblock %}
