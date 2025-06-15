@@ -61,12 +61,11 @@
         <div class="container-fluid page-header mb-5 p-0" style="background-image: url(/static/img/carousel-1.jpg);">
             <div class="container-fluid page-header-inner py-5">
                 <div class="container text-center pb-5">
-                    <h1 class="display-3 text-white mb-3 animated slideInDown">Testimonial</h1>
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Testimonials</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center text-uppercase">
-                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">Testimonial</li>
+                            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Testimonials</li>
                         </ol>
                     </nav>
                 </div>
@@ -125,44 +124,96 @@
         <div class="container-xxl testimonial mt-5 py-5 bg-dark wow zoomIn" data-wow-delay="0.1s" style="margin-bottom: 90px;">
             <div class="container">
                 <div class="owl-carousel testimonial-carousel py-5">
+                    {% for testimonial in testimonials %}
                     <div class="testimonial-item position-relative bg-white rounded overflow-hidden">
-                        <p>“ANN’s Retreat Center is a hidden gem! The rooms are spotless, and the staff made me feel like family. I’ll definitely be back!”</p>
+                        <p>{{ testimonial.content }}</p>
                         <div class="d-flex align-items-center">
-                            <img class="img-fluid flex-shrink-0 rounded" src="/static/img/-1.jpg" style="width: 45px; height: 45px;">
+                            {% if testimonial.image %}
+                                <img class="img-fluid flex-shrink-0 rounded" src="{{ testimonial.image.url }}" style="width: 45px; height: 45px;">
+                            {% else %}
+                                <img class="img-fluid flex-shrink-0 rounded" src="{% static 'img/default-avatar.jpg' %}" style="width: 45px; height: 45px;">
+                            {% endif %}
                             <div class="ps-3">
-                                <h6 class="fw-bold mb-1">Grace N., Nairobi</h6>
-                                <small>Progect Manager</small>
+                                <h6 class="fw-bold mb-1">{{ testimonial.name }}</h6>
+                                <small>{{ testimonial.role }}</small>
                             </div>
                         </div>
-                        <i class="fa fa-quote-right fa-3x text-primary position-absolute end-0 bottom-0 me-4 mb-n1"></i>
-                    </div>
-                    <div class="testimonial-item position-relative bg-white rounded overflow-hidden">
-                        <p>“The spa services were world-class. I felt relaxed and recharged after just one session. Truly a haven in Kenya.”</p>
-                        <div class="d-flex align-items-center">
-                            <img class="img-fluid flex-shrink-0 rounded" src="/static/img/-1.jpg" style="width: 45px; height: 45px;">
-                            <div class="ps-3">
-                                <h6 class="fw-bold mb-1">Kevin M., Kisumu</h6>
-                                <small>Software Developer</small>
-                            </div>
+                        <div class="position-absolute end-0 bottom-0 me-4 mb-n1">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= testimonial.rating %}
+                                    <i class="fa fa-star text-primary"></i>
+                                {% else %}
+                                    <i class="fa fa-star text-muted"></i>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <i class="fa fa-quote-right fa-3x text-primary position-absolute end-0 bottom-0 me-4 mb-n1"></i>
                     </div>
-                    <div class="testimonial-item position-relative bg-white rounded overflow-hidden">
-                        <p>“We held our anniversary party at ARC and everything was perfect—from the food to the ambience. It was unforgettable!”</p>
-                        <div class="d-flex align-items-center">
-                            <img class="img-fluid flex-shrink-0 rounded" src="/static/img/-1.jpg" style="width: 45px; height: 45px;">
-                            <div class="ps-3">
-                                <h6 class="fw-bold mb-1">Wanjiru & David, Nakuru</h6>
-                                <small>Pastor</small>
-                            </div>
-                        </div>
-                        <i class="fa fa-quote-right fa-3x text-primary position-absolute end-0 bottom-0 me-4 mb-n1"></i>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
         <!-- Testimonial End -->
 
+        <!-- Add Testimonial Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                    <h6 class="section-title text-center text-primary text-uppercase">Share Your Experience</h6>
+                    <h1 class="mb-5">Write a <span class="text-primary text-uppercase">Testimonial</span></h1>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-6 mx-auto">
+                        <div class="wow fadeInUp" data-wow-delay="0.2s">
+                            <form method="POST" action="{% url 'add_testimonial' %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                                            <label for="name">Your Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="role" name="role" placeholder="Your Role" required>
+                                            <label for="role">Your Role</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <textarea class="form-control" id="content" name="content" placeholder="Your Testimonial" style="height: 150px" required></textarea>
+                                            <label for="content">Your Testimonial</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="rating" name="rating" required>
+                                                <option value="5">5 Stars</option>
+                                                <option value="4">4 Stars</option>
+                                                <option value="3">3 Stars</option>
+                                                <option value="2">2 Stars</option>
+                                                <option value="1">1 Star</option>
+                                            </select>
+                                            <label for="rating">Rating</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                            <label for="image">Your Photo (Optional)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="btn btn-primary w-100 py-3" type="submit">Submit Testimonial</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Add Testimonial End -->
 
         <!-- Newsletter Start -->
         <div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -171,16 +222,19 @@
                     <div class="border rounded text-center p-1">
                         <div class="bg-white rounded text-center p-5">
                             <h4 class="mb-4">Subscribe Our <span class="text-primary text-uppercase">Newsletter</span></h4>
-                            <div class="position-relative mx-auto" style="max-width: 400px;">
-                                <input class="form-control w-100 py-3 ps-4 pe-5" type="text" placeholder="Enter your email">
-                                <button type="button" class="btn btn-primary py-2 px-3 position-absolute top-0 end-0 mt-2 me-2">Submit</button>
-                            </div>
+                            <form method="POST" action="{% url 'subscribe_newsletter' %}">
+                                {% csrf_token %}
+                                <div class="position-relative mx-auto" style="max-width: 400px;">
+                                    <input class="form-control w-100 py-3 ps-4 pe-5" type="email" name="email" placeholder="Enter your email" required>
+                                    <button type="submit" class="btn btn-primary py-2 px-3 position-absolute top-0 end-0 mt-2 me-2">Submit</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Newsletter Start -->
+        <!-- Newsletter End -->
         
 <!-- Footer -->
     <div id="footer-placeholder"></div>
@@ -204,7 +258,30 @@
     <!-- Template Javascript -->
     <script src="/static/js/main.js"></script>
 
-    
+    <script>
+    $(document).ready(function(){
+        $(".testimonial-carousel").owlCarousel({
+            loop: true,
+            margin: 10,
+            responsiveClass: true,
+            responsive: {
+                0: {
+                    items: 1,
+                    nav: false
+                },
+                600: {
+                    items: 1,
+                    nav: false
+                },
+                1000: {
+                    items: 1,
+                    nav: false,
+                    loop: true
+                }
+            }
+        });
+    });
+    </script>
 </body>
 </html>
 

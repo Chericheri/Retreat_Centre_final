@@ -130,74 +130,66 @@
                     <h1 class="mb-5">Explore Our <span class="text-primary text-uppercase">Services</span></h1>
                 </div>
                 <div class="row g-4">
+                    {% for service in services %}
                     <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <a class="service-item rounded" href="">
-                            <div class="service-icon bg-transparent border rounded p-1">
-                                <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
-                                    <i class="fa fa-hotel fa-2x text-primary"></i>
+                        <div class="service-item rounded">
+                            {% if service.image %}
+                            <img class="img-fluid" src="{{ service.image.url }}" alt="{{ service.name }}">
+                            {% else %}
+                            <img class="img-fluid" src="{% static 'img/service-1.jpg' %}" alt="Default Service Image">
+                            {% endif %}
+                            <div class="service-content text-center p-4">
+                                <h4 class="mb-3">{{ service.name }}</h4>
+                                <p class="mb-4">{{ service.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="text-primary">${{ service.price }}</span>
+                                        {% if service.duration %}
+                                        <small class="text-muted">/ {{ service.duration }} mins</small>
+                                        {% endif %}
+                                    </div>
+                                    {% if service.is_available %}
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#serviceModal{{ service.id }}">
+                                        Book Now
+                                    </button>
+                                    {% else %}
+                                    <button class="btn btn-secondary" disabled>Not Available</button>
+                                    {% endif %}
                                 </div>
                             </div>
-                            <h5 class="mb-3">Rooms & Appartment</h5>
-                            <p class="text-body mb-0">Experience elegant comfort in our fully furnished rooms and apartments. Whether you're on a weekend escape or a long term stay, our serene spaces provide the peace and privacy you deserve.</p>
-                        </a>
+                        </div>
                     </div>
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
-                        <a class="service-item rounded" href="">
-                            <div class="service-icon bg-transparent border rounded p-1">
-                                <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
-                                    <i class="fa fa-utensils fa-2x text-primary"></i>
-                                </div>
-                            </div>
-                            <h5 class="mb-3">Food & Restaurant</h5>
-                            <p class="text-body mb-0">Savor every bite with our diverse menu featuring local Kenyan delicacies and international favorites. Our chefs use fresh, organic ingredients to craft dishes that nourish and delight.</p>
-                        </a>
-                    </div>
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                        <a class="service-item rounded" href="">
-                            <div class="service-icon bg-transparent border rounded p-1">
-                                <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
-                                    <i class="fa fa-spa fa-2x text-primary"></i>
-                                </div>
-                            </div>
-                            <h5 class="mb-3">Spa & Fitness</h5>
-                            <p class="text-body mb-0">Rejuvenate your body and soul with our spa and fitness services. From soothing massages to invigorating workouts, ARC helps you stay energized and refreshed.</p>
-                        </a>
-                    </div>
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.4s">
-                        <a class="service-item rounded" href="">
-                            <div class="service-icon bg-transparent border rounded p-1">
-                                <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
-                                    <i class="fa fa-swimmer fa-2x text-primary"></i>
-                                </div>
-                            </div>
-                            <h5 class="mb-3">Sports & Gaming</h5>
-                            <p class="text-body mb-0">Stay active and entertained! Whether you enjoy swimming, indoor games, or outdoor sports, our facilities are designed for fun and fitness for all ages.</p>
-                        </a>
-                    </div>
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                        <a class="service-item rounded" href="">
-                            <div class="service-icon bg-transparent border rounded p-1">
-                                <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
-                                    <i class="fa fa-glass-cheers fa-2x text-primary"></i>
-                                </div>
-                            </div>
-                            <h5 class="mb-3">Event & Party</h5>
-                            <p class="text-body mb-0">Make memories at ARC! Our spacious and elegant venues are perfect for weddings, birthdays, corporate retreats, and private celebrations customized to suit your style.</p>
-                        </a>
-                    </div>
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.6s">
-                        <a class="service-item rounded" href="">
-                            <div class="service-icon bg-transparent border rounded p-1">
-                                <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
-                                    <i class="fa fa-dumbbell fa-2x text-primary"></i>
-                                </div>
-                            </div>
-                            <h5 class="mb-3">GYM & Yoga</h5>
-                            <p class="text-body mb-0">Balance your mind and body in our modern gym and yoga studio. We offer guided sessions that blend strength, flexibility, and mindfulness for a holistic wellness experience.
 
-</p>
-                        </a>
+                    <!-- Service Booking Modal -->
+                    <div class="modal fade" id="serviceModal{{ service.id }}" tabindex="-1" aria-labelledby="serviceModalLabel{{ service.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="serviceModalLabel{{ service.id }}">Book {{ service.name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{% url 'book_service' service.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="booking_id" class="form-label">Room Booking Reference</label>
+                                            <input type="text" class="form-control" id="booking_id" name="booking_id" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="quantity" class="form-label">Quantity</label>
+                                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="scheduled_date" class="form-label">Scheduled Date</label>
+                                            <input type="date" class="form-control" id="scheduled_date" name="scheduled_date" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -209,7 +201,7 @@
             <div class="container">
                 <div class="owl-carousel testimonial-carousel py-5">
                     <div class="testimonial-item position-relative bg-white rounded overflow-hidden">
-                        <p>“ANN’s Retreat Center is a hidden gem! The rooms are spotless, and the staff made me feel like family. I’ll definitely be back!”</p>
+                        <p>"ANN's Retreat Center is a hidden gem! The rooms are spotless, and the staff made me feel like family. I'll definitely be back!"</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded" src="/static/img/-1.jpg" style="width: 45px; height: 45px;">
                             <div class="ps-3">
@@ -220,7 +212,7 @@
                         <i class="fa fa-quote-right fa-3x text-primary position-absolute end-0 bottom-0 me-4 mb-n1"></i>
                     </div>
                     <div class="testimonial-item position-relative bg-white rounded overflow-hidden">
-                        <p>“The spa services were world-class. I felt relaxed and recharged after just one session. Truly a haven in Kenya.”</p>
+                        <p>"The spa services were world-class. I felt relaxed and recharged after just one session. Truly a haven in Kenya."</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded" src="/static/img/-1.jpg" style="width: 45px; height: 45px;">
                             <div class="ps-3">
@@ -231,7 +223,7 @@
                         <i class="fa fa-quote-right fa-3x text-primary position-absolute end-0 bottom-0 me-4 mb-n1"></i>
                     </div>
                     <div class="testimonial-item position-relative bg-white rounded overflow-hidden">
-                        <p>“We held our anniversary party at ARC and everything was perfect—from the food to the ambience. It was unforgettable!”</p>
+                        <p>"We held our anniversary party at ARC and everything was perfect—from the food to the ambience. It was unforgettable!"</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded" src="/static/img/-1.jpg" style="width: 45px; height: 45px;">
                             <div class="ps-3">
@@ -292,5 +284,15 @@
    
 </body>
 </html>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set minimum date for service booking to today
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('input[name="scheduled_date"]').forEach(input => {
+        input.min = today;
+    });
+});
+</script>
 
 {% endblock %}

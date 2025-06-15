@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title text-center text-primary text-uppercase">Booking Confirmation</h6>
+            <h1 class="mb-5">Your <span class="text-primary text-uppercase">Booking Details</span></h1>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Room Booking Details</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p><strong>Room:</strong> {{ booking.room.name }}</p>
+                                <p><strong>Check-in Date:</strong> {{ booking.check_in_date }}</p>
+                                <p><strong>Check-out Date:</strong> {{ booking.check_out_date }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Number of Guests:</strong> {{ booking.number_of_guests }}</p>
+                                <p><strong>Total Price:</strong> ${{ booking.total_price }}</p>
+                                <p><strong>Status:</strong> <span class="badge bg-{{ booking.status }}">{{ booking.get_status_display }}</span></p>
+                            </div>
+                        </div>
+                        
+                        {% if booking.special_requests %}
+                        <div class="mb-3">
+                            <h6>Special Requests:</h6>
+                            <p>{{ booking.special_requests }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if service_bookings %}
+                        <div class="mt-4">
+                            <h5 class="mb-3">Booked Services</h5>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Service</th>
+                                            <th>Date</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for service_booking in service_bookings %}
+                                        <tr>
+                                            <td>{{ service_booking.service.name }}</td>
+                                            <td>{{ service_booking.scheduled_date }}</td>
+                                            <td>{{ service_booking.quantity }}</td>
+                                            <td>${{ service_booking.total_price }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Need Help?</h5>
+                        <p>If you have any questions about your booking, please contact us:</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fa fa-phone text-primary me-2"></i> +123 456 7890</li>
+                            <li><i class="fa fa-envelope text-primary me-2"></i> info@retreatcenter.com</li>
+                        </ul>
+                        <a href="{% url 'contact' %}" class="btn btn-primary w-100">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
