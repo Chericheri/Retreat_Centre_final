@@ -117,9 +117,9 @@ def book_service(request, service_id):
             
         except Exception as e:
             messages.error(request, f'Error booking service: {str(e)}')
-            return redirect('services')
+            return redirect('service')
     
-    return redirect('services')
+    return redirect('service')
 
 def subscribe_newsletter(request):
     if request.method == 'POST':
