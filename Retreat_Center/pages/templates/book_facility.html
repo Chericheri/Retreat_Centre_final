@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Facility - ARC{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="container-fluid page-header mb-5 p-0" style="background-image: url({% static 'img/carousel-1.jpg' %});">
+    <div class="container-fluid page-header-inner py-5">
+        <div class="container text-center pb-5">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Book Facility</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center text-uppercase">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'facilities' %}">Facilities</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Book Facility</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Booking Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="bg-light rounded p-4">
+                            <h4 class="mb-3">{{ facility.name }}</h4>
+                            {% if facility.image %}
+                                <img class="img-fluid rounded mb-3" src="{{ facility.image.url }}" alt="{{ facility.name }}" style="width: 100%; height: 300px; object-fit: cover;">
+                            {% else %}
+                                <img class="img-fluid rounded mb-3" src="{% static 'img/room-1.jpg' %}" alt="{{ facility.name }}" style="width: 100%; height: 300px; object-fit: cover;">
+                            {% endif %}
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <h6 class="mb-1">Capacity</h6>
+                                    <small class="text-muted">{{ facility.capacity }} people</small>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Hourly Rate</h6>
+                                    <small class="text-muted">KES {{ facility.hourly_rate }}/hour</small>
+                                </div>
+                            </div>
+                            <p class="mb-3">{{ facility.description }}</p>
+                            <div class="mb-3">
+                                <h6 class="mb-2">Amenities</h6>
+                                <p class="text-muted">{{ facility.amenities }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="bg-light rounded p-5">
+                    <h4 class="mb-4">Book This Facility</h4>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="name" name="guest_name" placeholder="Your Name" required>
+                                    <label for="name">Your Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" name="guest_email" placeholder="Your Email" required>
+                                    <label for="email">Your Email</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="tel" class="form-control" id="phone" name="guest_phone" placeholder="Your Phone" required>
+                                    <label for="phone">Your Phone</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="guests" name="number_of_guests" placeholder="Number of Guests" min="1" max="{{ facility.capacity }}" required>
+                                    <label for="guests">Number of Guests</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="datetime-local" class="form-control" id="start_time" name="start_time" required>
+                                    <label for="start_time">Start Time</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="datetime-local" class="form-control" id="end_time" name="end_time" required>
+                                    <label for="end_time">End Time</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Special Requirements" id="requirements" name="special_requirements" style="height: 100px"></textarea>
+                                    <label for="requirements">Special Requirements</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <h6 class="mb-2">Booking Summary</h6>
+                                    <p class="mb-1"><strong>Facility:</strong> {{ facility.name }}</p>
+                                    <p class="mb-1"><strong>Rate:</strong> KES {{ facility.hourly_rate }}/hour</p>
+                                    <p class="mb-0"><strong>Capacity:</strong> Up to {{ facility.capacity }} people</p>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-primary w-100 py-3" type="submit">Book Facility</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Booking End -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Set minimum date to today
+        const today = new Date().toISOString().slice(0, 16);
+        $('#start_time').attr('min', today);
+        $('#end_time').attr('min', today);
+        
+        // Update end time when start time changes
+        $('#start_time').on('change', function() {
+            const startTime = new Date($(this).val());
+            const minEndTime = new Date(startTime.getTime() + 60 * 60 * 1000); // 1 hour later
+            $('#end_time').attr('min', minEndTime.toISOString().slice(0, 16));
+        });
+    });
+</script>
+{% endblock %}

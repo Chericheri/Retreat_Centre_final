@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Results - ARC{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="container-fluid page-header mb-5 p-0" style="background-image: url({% static 'img/carousel-1.jpg' %});">
+    <div class="container-fluid page-header-inner py-5">
+        <div class="container text-center pb-5">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Search Results</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center text-uppercase">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Search</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Search Results Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <form method="GET" action="{% url 'search' %}" class="d-flex">
+                    <input class="form-control me-2" type="search" name="q" value="{{ query }}" placeholder="Search rooms, events, services, facilities..." aria-label="Search">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+        
+        {% if query %}
+            <h3 class="mb-4">Search Results for "{{ query }}"</h3>
+            
+            <!-- Rooms Results -->
+            {% if results.rooms %}
+                <div class="mb-5">
+                    <h4 class="mb-3">Rooms ({{ results.rooms|length }})</h4>
+                    <div class="row g-4">
+                        {% for room in results.rooms %}
+                        <div class="col-lg-4 col-md-6">
+                            <div class="room-item shadow rounded overflow-hidden">
+                                <div class="position-relative">
+                                    {% if room.image %}
+                                        <img class="img-fluid" src="{{ room.image.url }}" alt="{{ room.name }}">
+                                    {% else %}
+                                        <img class="img-fluid" src="{% static 'img/room-1.jpg' %}" alt="{{ room.name }}">
+                                    {% endif %}
+                                    <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
+                                        KES {{ room.price_per_night }}/Night
+                                    </small>
+                                </div>
+                                <div class="p-4 mt-2">
+                                    <h5 class="mb-0">{{ room.name }}</h5>
+                                    <p class="text-body mb-3">{{ room.description|truncatechars:100 }}</p>
+                                    <a class="btn btn-sm btn-primary rounded py-2 px-4" href="{% url 'room' %}">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Events Results -->
+            {% if results.events %}
+                <div class="mb-5">
+                    <h4 class="mb-3">Events ({{ results.events|length }})</h4>
+                    <div class="row g-4">
+                        {% for event in results.events %}
+                        <div class="col-lg-4 col-md-6">
+                            <div class="room-item shadow rounded overflow-hidden">
+                                <div class="position-relative">
+                                    {% if event.image %}
+                                        <img class="img-fluid" src="{{ event.image.url }}" alt="{{ event.name }}">
+                                    {% else %}
+                                        <img class="img-fluid" src="{% static 'img/room-1.jpg' %}" alt="{{ event.name }}">
+                                    {% endif %}
+                                    <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
+                                        KES {{ event.price_per_person }}/Person
+                                    </small>
+                                </div>
+                                <div class="p-4 mt-2">
+                                    <h5 class="mb-0">{{ event.name }}</h5>
+                                    <p class="text-body mb-3">{{ event.description|truncatechars:100 }}</p>
+                                    <a class="btn btn-sm btn-primary rounded py-2 px-4" href="{% url 'event_detail' event.id %}">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Services Results -->
+            {% if results.services %}
+                <div class="mb-5">
+                    <h4 class="mb-3">Services ({{ results.services|length }})</h4>
+                    <div class="row g-4">
+                        {% for service in results.services %}
+                        <div class="col-lg-4 col-md-6">
+                            <div class="service-item rounded p-4 bg-light">
+                                <h5 class="mb-3">{{ service.name }}</h5>
+                                <p class="text-body mb-3">{{ service.description|truncatechars:100 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-primary fw-bold">KES {{ service.price }}</span>
+                                    <a class="btn btn-sm btn-primary rounded py-2 px-4" href="{% url 'service' %}">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Facilities Results -->
+            {% if results.facilities %}
+                <div class="mb-5">
+                    <h4 class="mb-3">Facilities ({{ results.facilities|length }})</h4>
+                    <div class="row g-4">
+                        {% for facility in results.facilities %}
+                        <div class="col-lg-4 col-md-6">
+                            <div class="room-item shadow rounded overflow-hidden">
+                                <div class="position-relative">
+                                    {% if facility.image %}
+                                        <img class="img-fluid" src="{{ facility.image.url }}" alt="{{ facility.name }}">
+                                    {% else %}
+                                        <img class="img-fluid" src="{% static 'img/room-1.jpg' %}" alt="{{ facility.name }}">
+                                    {% endif %}
+                                    {% if facility.hourly_rate %}
+                                        <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
+                                            KES {{ facility.hourly_rate }}/Hour
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <div class="p-4 mt-2">
+                                    <h5 class="mb-0">{{ facility.name }}</h5>
+                                    <p class="text-body mb-3">{{ facility.description|truncatechars:100 }}</p>
+                                    <a class="btn btn-sm btn-primary rounded py-2 px-4" href="{% url 'facilities' %}">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- No Results -->
+            {% if not results.rooms and not results.events and not results.services and not results.facilities %}
+                <div class="alert alert-info text-center">
+                    <h4>No results found</h4>
+                    <p>Try searching with different keywords or browse our <a href="{% url 'room' %}">rooms</a>, <a href="{% url 'events' %}">events</a>, or <a href="{% url 'service' %}">services</a>.</p>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info text-center">
+                <h4>Search our retreat center</h4>
+                <p>Find rooms, events, services, and facilities that match your needs.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<!-- Search Results End -->
+{% endblock %}

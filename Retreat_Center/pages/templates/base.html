@@ -13,6 +13,15 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
 
+<!-- WOW Animation CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+<!-- Tempus Dominus CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
 <!-- jQuery (required for Owl Carousel) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -112,20 +121,46 @@
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="{% url 'home' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}">Home</a>
-                            <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
-                            <a href="{% url 'service' %}" class="nav-item nav-link">Services</a>
-                            <a href="{% url 'room' %}" class="nav-item nav-link">Rooms</a>
+                            <a href="{% url 'home' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'home' or request.resolver_match.url_name == 'index' %}active{% endif %}">Home</a>
+                            <a href="{% url 'about' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
+                            <a href="{% url 'service' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'service' %}active{% endif %}">Services</a>
+                            <a href="{% url 'room' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'room' %}active{% endif %}">Rooms</a>
+                            <a href="{% url 'events' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'events' %}active{% endif %}">Events</a>
+                            <a href="{% url 'facilities' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'facilities' %}active{% endif %}">Facilities</a>
                             <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                                <a href="#" class="nav-link dropdown-toggle {% if request.resolver_match.url_name == 'booking' or request.resolver_match.url_name == 'testimonial' or request.resolver_match.url_name == 'reviews' %}active{% endif %}" data-bs-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="{% url 'booking' %}" class="dropdown-item">Booking</a>
-                                    <a href="{% url 'testimonial' %}" class="dropdown-item">Testimonials</a>
+                                    <a href="{% url 'booking' %}" class="dropdown-item {% if request.resolver_match.url_name == 'booking' %}active{% endif %}">Booking</a>
+                                    <a href="{% url 'testimonial' %}" class="dropdown-item {% if request.resolver_match.url_name == 'testimonial' %}active{% endif %}">Testimonials</a>
+                                    <a href="{% url 'reviews' %}" class="dropdown-item {% if request.resolver_match.url_name == 'reviews' %}active{% endif %}">Reviews</a>
                                 </div>
                             </div>
-                            <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
+                            <a href="{% url 'contact' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
                         </div>
-                        <a href="#" class="admin-login-btn btn rounded-0 py-4 px-md-5 d-none d-lg-block">Admin Login</a>
+                        <div class="d-flex align-items-center">
+                            <form class="d-flex me-3" method="GET" action="{% url 'search' %}">
+                                <input class="form-control me-2" type="search" name="q" placeholder="Search..." style="width: 200px;">
+                                <button class="btn btn-outline-light" type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </form>
+                            {% if user.is_authenticated %}
+                                <div class="dropdown">
+                                    <a class="btn btn-outline-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                        {{ user.username }}
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="{% url 'user_profile' %}">Profile</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'user_bookings' %}">My Bookings</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{% url 'admin:logout' %}">Logout</a></li>
+                                    </ul>
+                                </div>
+                            {% else %}
+                                <a href="{% url 'register' %}" class="btn btn-outline-light me-2">Register</a>
+                                <a href="{% url 'admin:login' %}" class="admin-login-btn btn rounded-0 py-4 px-md-5">Login</a>
+                            {% endif %}
+                        </div>
                     </div>
                 </nav>
             </div>
@@ -134,11 +169,22 @@
     <!-- Header End -->
     {% endblock %}
 
-    <main class="container py-5">
+    <main>
         {% block content %}
         <!-- Default content can go here, but likely you'll override this in child templates -->
         {% endblock %}
     </main>
+
+    <!-- Django Messages Display -->
+    {% if messages %}
+        <div id="django-messages" style="display: none;">
+            {% for message in messages %}
+                <div data-level="{{ message.tags }}" data-message="{{ message|escape }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     {% block footer %}
     <!-- Footer Start -->
@@ -211,14 +257,15 @@
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
-    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
-    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
-    <script src="{% static 'lib/counterup/counterup.min.js' %}"></script>
-    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
-    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
-    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
-    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/easing/1.3.0/easing.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"></script>
 
     <!-- Template Javascript -->
     <script src="{% static 'js/main.js' %}"></script>

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Facilities - ARC{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="container-fluid page-header mb-5 p-0" style="background-image: url({% static 'img/carousel-1.jpg' %});">
+    <div class="container-fluid page-header-inner py-5">
+        <div class="container text-center pb-5">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Our Facilities</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center text-uppercase">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Facilities</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Facilities Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title text-center text-primary text-uppercase">Our Facilities</h6>
+            <h1 class="mb-5">Available <span class="text-primary text-uppercase">Facilities</span></h1>
+        </div>
+        
+        {% if facilities %}
+            <div class="row g-4">
+                {% for facility in facilities %}
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="room-item shadow rounded overflow-hidden">
+                        <div class="position-relative">
+                            {% if facility.image %}
+                                <img class="img-fluid" src="{{ facility.image.url }}" alt="{{ facility.name }}">
+                            {% else %}
+                                <img class="img-fluid" src="{% static 'img/room-1.jpg' %}" alt="{{ facility.name }}">
+                            {% endif %}
+                            {% if facility.hourly_rate %}
+                                <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
+                                    KES {{ facility.hourly_rate }}/Hour
+                                </small>
+                            {% endif %}
+                        </div>
+                        <div class="p-4 mt-2">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5 class="mb-0">{{ facility.name }}</h5>
+                                <div class="ps-2">
+                                    <small class="fa fa-users text-primary me-1"></small>
+                                    <small>{{ facility.capacity }} people</small>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-3">
+                                <small class="border-end me-3 pe-3">
+                                    <i class="fa fa-users text-primary me-2"></i>{{ facility.capacity }} Capacity
+                                </small>
+                                <small>
+                                    <i class="fa fa-clock text-primary me-2"></i>Hourly Rate
+                                </small>
+                            </div>
+                            <p class="text-body mb-3">{{ facility.description|truncatechars:100 }}</p>
+                            <div class="d-flex justify-content-between">
+                                <a class="btn btn-sm btn-primary rounded py-2 px-4" href="{% url 'book_facility' facility.id %}">Book Now</a>
+                                <span class="text-muted small">{{ facility.amenities|truncatechars:30 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                <h4>No facilities available at the moment.</h4>
+                <p>Please check back later for facility listings.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<!-- Facilities End -->
+{% endblock %}

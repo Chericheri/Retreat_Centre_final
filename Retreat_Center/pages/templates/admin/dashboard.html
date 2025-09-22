@@ -1,0 +1,259 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Home</a>
+    &rsaquo; Dashboard
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>{{ title }}</h1>
+    
+    <!-- Statistics Cards -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Total Bookings</h4>
+                    <h2>{{ total_bookings }}</h2>
+                    <p>All time bookings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Confirmed</h4>
+                    <h2>{{ confirmed_bookings }}</h2>
+                    <p>Active bookings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Pending</h4>
+                    <h2>{{ pending_bookings }}</h2>
+                    <p>Awaiting confirmation</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Cancelled</h4>
+                    <h2>{{ cancelled_bookings }}</h2>
+                    <p>Cancelled bookings</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue and Events Row -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Revenue Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Total Revenue</h6>
+                            <h4 class="text-success">KES {{ total_revenue|floatformat:2 }}</h4>
+                        </div>
+                        <div class="col-6">
+                            <h6>This Month</h6>
+                            <h4 class="text-primary">KES {{ monthly_revenue|floatformat:2 }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Events & Facilities</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Total Events</h6>
+                            <h4 class="text-info">{{ total_events }}</h4>
+                            <small>Active: {{ active_events }}</small>
+                        </div>
+                        <div class="col-6">
+                            <h6>Facilities</h6>
+                            <h4 class="text-info">{{ total_facilities }}</h4>
+                            <small>Available: {{ available_facilities }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Bookings</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_bookings %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Guest</th>
+                                        <th>Room</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in recent_bookings %}
+                                    <tr>
+                                        <td>{{ booking.guest_name }}</td>
+                                        <td>{{ booking.room.name }}</td>
+                                        <td>
+                                            <span class="badge badge-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                                {{ booking.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent bookings</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Contact Messages</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_contacts %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Subject</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for contact in recent_contacts %}
+                                    <tr>
+                                        <td>{{ contact.name }}</td>
+                                        <td>{{ contact.subject|truncatechars:20 }}</td>
+                                        <td>
+                                            <span class="badge badge-{% if contact.status == 'read' %}success{% else %}warning{% endif %}">
+                                                {{ contact.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>{{ contact.created_at|date:"M d" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent messages</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Testimonials and Reviews -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Testimonials</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_testimonials %}
+                        {% for testimonial in recent_testimonials %}
+                        <div class="mb-3">
+                            <h6>{{ testimonial.name }}</h6>
+                            <p class="text-muted">{{ testimonial.content|truncatechars:100 }}</p>
+                            <small class="text-muted">{{ testimonial.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No recent testimonials</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Reviews</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_reviews %}
+                        {% for review in recent_reviews %}
+                        <div class="mb-3">
+                            <h6>{{ review.title }}</h6>
+                            <div class="text-warning">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <i class="fa fa-star"></i>
+                                    {% else %}
+                                        <i class="fa fa-star-o"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p class="text-muted">{{ review.content|truncatechars:100 }}</p>
+                            <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No recent reviews</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard .card {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dashboard .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.dashboard .badge {
+    font-size: 0.75em;
+}
+
+.dashboard .table th {
+    border-top: none;
+    font-weight: 600;
+}
+</style>
+{% endblock %}
